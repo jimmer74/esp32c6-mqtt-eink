@@ -143,64 +143,26 @@ pub async fn eink(
                         &PrimitiveStyle::with_fill(TriColor::White), 
                         &mut display);
 
-                //decompose the msg into a vector of words for easier text processing
-                let mut msg = msg.data.split_ascii_whitespace().collect::<Vec<&str, 30>>();
-                
-                //vec to hold words from current line and a variable to hold character length of that line (including spaces)
-                let mut line_length = 0;
-                //TODO: keep this as vec as we are pushing to back, so deque gives no advantage
-                let mut line: Vec<&str, 30> = Vec::new();
+                //split msg into lines of, at most, MAX_MSG_WIDTH chars (including spaces)
+                let lines = msg_to_vec_lines(msg, MAX_MSG_WIDTH);
 
-                //variable to hold y_offset of current line 
-                let mut y_offset: i32 = 0;
-                
-                //loop while msg still has words left in it
-                loop {
-                    
-                    //get char length of current word (the 1st word in msg vector)
-                    let word_len = 
-                        if let Some(word) = msg.iter().nth(0) {
-                            word.len()
-                        } else {
-                            0
-                        };
 
-                    //if current line length plus the next word length is less than width of display
-                    //and we haven't already emptied msg, then:
-                    // 1) remove the word from msg    
-                    // 2) add word to current line
-                    // 3) increase current line character length by the word length plus 1 (for the space character)
-                    if line_length + word_len < MAX_MSG_WIDTH && !msg.is_empty(){
-                        line.push(msg.remove(0)).unwrap();
-                        line_length += word_len + 1;
-                    //line is finsihed (as in adding more words exceeds display width, or no more words left to process in msg)
-                    } else {
-                        //add back spaces and collect current line vec into a string
-                        let cur_line = line.join(" ");
+                let mut y_offset = 0;
 
-                        // Draw string at correct y_offset for whatever line number we're on           
-                        _ = Text::with_text_style(
-                            &cur_line,
-                            Point::new(MSG_CONT_PT.x, MSG_CONT_PT.y + y_offset),
-                            IP_ADDR_FONT,
-                            TextStyle::default()
-                                ).draw(&mut display);
-                        
-                        //if msg is empty, break out of loop to get driver to actually update the screen
-                        if msg.is_empty() {
-                            break;
+                //send each line to the display, increasing the y_offset each time
+                for line in lines {
+                    _ = Text::with_text_style(
+                        &line,
+                        Point::new(MSG_CONT_PT.x, MSG_CONT_PT.y + y_offset),
+                        IP_ADDR_FONT,
+                        TextStyle::default()
+                            ).draw(&mut display);
 
-                        //msg has words left to process, reset variables for next iteration of loop
-                        } else {
-                            //reset current line vec and length variables for next loop        
-                            line.clear();
-                            line_length = 0;
-                            //increase y_offset for next line
-                            y_offset += 13;
-                        }
-                    }
-               }
-         
+                    y_offset += 15;
+
+                }
+
+                //update display to show the finalised msg
                 _ = driver.full_update(&mut display).await;
 
             },
@@ -210,6 +172,61 @@ pub async fn eink(
 
 }
 
+
+fn msg_to_vec_lines<'a>(msg: Msg, max_len: usize) -> Vec<String<35>, 5> {
+
+    let mut msg = msg.data.split_ascii_whitespace().collect::<Vec<&str, 30>>();
+              
+    //vec to hold words from current line and a variable to hold character length of that line (including spaces)
+    let mut line_length = 0;
+    //TODO: keep this as vec as we are pushing to back, so deque gives no advantage
+    let mut line: Vec<&str, 30> = Vec::new();
+    let mut op: Vec<String<35>, 5> = Vec::new();
+
+    
+    //loop while msg still has words left in it
+    loop {
+        
+        //get char length of current word (the 1st word in msg vector)
+        let word_len = 
+            if let Some(word) = msg.iter().nth(0) {
+                word.len()
+            } else {
+                0
+            };
+
+        //if current line length plus the next word length is less than width of display
+        //and we haven't already emptied msg, then:
+        // 1) remove the word from msg    
+        // 2) add word to current line
+        // 3) increase current line character length by the word length plus 1 (for the space character)
+        if line_length + word_len + 1 < max_len && !msg.is_empty(){
+            line.push(msg.remove(0)).unwrap();
+            line_length += word_len + 1;
+        //line is finsihed (as in adding more words exceeds display width, or no more words left to process in msg)
+        } else {
+            //add back spaces and collect current line vec into a string
+            let cur_line = line.join(" ");
+            //convert to String<35>
+            let cur_line = String::<35>::from_str(&cur_line).unwrap();
+
+            op.push(cur_line).unwrap();
+            
+            //if msg is empty, break out of loop to get driver to actually update the screen
+            if msg.is_empty() {
+                break;
+            //msg has words left to process, reset variables for next iteration of loop
+            } else {
+                //reset current line vec and length variables for next loop        
+                line.clear();
+                line_length = 0;
+            }
+        }
+    }
+    
+    op
+
+}
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct Msg {

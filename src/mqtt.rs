@@ -45,6 +45,7 @@ pub async fn mqtt_task(stack: Stack<'static>) {
     // check link is up - busy-wait if not
     if !stack.is_link_up() {
         Timer::after(Duration::from_millis(500)).await;
+       // println!("link is up!");
         continue 'mqqt_setup;
     }
 
@@ -53,11 +54,9 @@ pub async fn mqtt_task(stack: Stack<'static>) {
     if let Some(net_config) = stack.config_v4() {
         write_ip_addr(Some(net_config.address));
         println!("Got IP: {}", net_config.address);
-       
     } else {
         Timer::after(Duration::from_millis(100)).await;
         continue 'mqqt_setup;
-
     }
     
     if current_loop > 0 {
