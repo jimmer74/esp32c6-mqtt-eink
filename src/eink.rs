@@ -57,7 +57,7 @@ pub async fn eink(
         
     //Write IP&Mqqt
     _ = Text::with_text_style("IP:",IP_PT,IP_TITLE_FONT,TextStyle::default()).draw(&mut display);
-    _ = Text::with_text_style("MQQT:",MQTT_PT,IP_TITLE_FONT,TextStyle::default()).draw(&mut display);
+    _ = Text::with_text_style("MQTT:",MQTT_PT,IP_TITLE_FONT,TextStyle::default()).draw(&mut display);
 
     //Initially unconnected - so addr/mqqt is None/Unconnected
     _ = Text::with_text_style("None",IP_ADDR_PT,IP_ADDR_FONT,TextStyle::default()).draw(&mut display);
@@ -65,7 +65,9 @@ pub async fn eink(
    // _ = driver.full_update(&display).await;
 
    _ = Text::with_text_style("Message:",MSG_TITLE_PT,IP_TITLE_FONT,TextStyle::default()).draw(&mut display);
-   _ = Text::with_text_style("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", MSG_CONT_PT, IP_ADDR_FONT, TextStyle::default()).draw(&mut display);
+   _ = Text::with_text_style("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghi", MSG_CONT_PT, IP_ADDR_FONT, TextStyle::default()).draw(&mut display);
+   _ = Text::with_text_style("jklmnopqrstuvwxy01234567890:;,.~£#@", Point { x: MSG_CONT_PT.x, y: MSG_CONT_PT.y + 15 }, IP_ADDR_FONT, TextStyle::default()).draw(&mut display);
+
 
     loop {
         let fut_a = ip_up_recv.receive();

@@ -167,7 +167,7 @@ async fn main(spawner: Spawner) {
     /* 
     * --------------------------------------------------
     *
-    *             Peripheral setup boilerplate
+    *             Esp Peripheral setup boilerplate
     *
     * --------------------------------------------------
     */
