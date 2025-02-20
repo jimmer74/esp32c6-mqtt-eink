@@ -1,0 +1,27 @@
+[env]
+DEFMT_LOG="info"
+
+#Wifi
+  SSID="WIFI_SSID"
+  PASSW="WIFI_PASSWORD"
+  
+#Mqtt
+  MQTT_USER="MQTT_USERNAME"
+  MQTT_PASS="MQTT_PASSWORD"
+  MQTT_ADDR="MQTT_IP_ADDR"
+  MQTT_ID="esp32c6-v1"
+
+[target.riscv32imac-unknown-none-elf]
+runner = "espflash flash --baud=921600"
+
+[build]
+rustflags = [
+  # Required to obtain backtraces (e.g. when using the "esp-backtrace" crate.)
+  # NOTE: May negatively impact performance of produced code
+  "-C", "force-frame-pointers",
+]
+
+target = "riscv32imac-unknown-none-elf"
+
+[unstable]
+build-std = ["alloc", "core"]
