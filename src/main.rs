@@ -17,37 +17,28 @@ use esp_hal::{
     rmt::Rmt, 
     time::RateExtU32 
 };
-//use embedded_hal_bus::spi::ExclusiveDevice;
 use embassy_executor::Spawner;
 use embassy_time::{Duration, Timer};
 use embassy_sync::{channel::Channel, blocking_mutex::raw::CriticalSectionRawMutex};
-//use esp_println::println;
 use heapless::String;
-/* use esp_println::println;
-use heapless::String; */
 use core::cell::RefCell;
 use lazy_static::lazy_static;
 //smartled rgb onboard
 use esp_hal_smartled::{smartLedBuffer, SmartLedsAdapter};
-//mqtt interface specific
-
 use rust_mqtt::{
     client::client_config::MqttVersion, 
     packet::v5::publish_packet::QualityOfService
 };
-//ePaper display specific
-
-
-
-
 extern crate alloc;
 
+//local modules
 mod input; use input::gpio_int_handler;
 mod panic;
 mod wireless; use wireless::*;
 mod mqtt;
 mod led; use led::*;
 mod eink;
+mod mk_static;
 
 
 /* 
@@ -60,8 +51,6 @@ mod eink;
 * ----------------------------------------------------------------------
 */
 
-//#[macro_use]
-mod mk_static;
 
 lazy_static! {
     static ref BTN_CHANNEL: Channel<CriticalSectionRawMutex, u8, 1>
@@ -86,8 +75,8 @@ lazy_static! {
 static BUTTON: Mutex<RefCell<Option<Input>>> = Mutex::new(RefCell::new(None));
 static IP_ADDR: Mutex<RefCell<Option<String<21>>>> = Mutex::new(RefCell::new(None));
 static MQTT_ADDR: Mutex<RefCell<Option<(String<18>, String<4>)>>> = Mutex::new(RefCell::new(None));
-//static MQTT_UP: Mutex<RefCell<bool>> = Mutex::new(RefCell::new(false));
 static MQTT_PING_TO: u8 = 30;
+
 const MQTT_VER: MqttVersion = MqttVersion::MQTTv5;
 const MQTT_MAX_BUF_SIZE: usize = 240;
 const MQTT_MAX_QOS: QualityOfService = QualityOfService::QoS1;
