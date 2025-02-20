@@ -18,6 +18,8 @@ Don't at me for my Rust coding style - like Moana I'm self-taught. 🤣
 
 I also like to split things up into their own modules. This includes the embassy tasks associated with something (ie mqtt messaging or the eink display) along with their helper functions. Helps me navigate the code more easily, I know some people like all their tasks in one place though...
 
+I also wanted to actually finish a project (including documentation and a case) and will upload the stl files once I have something that is working/the correct size/3d printable.
+
 ## Connections
 
 The neopixel (GPIO8) and the button (GPIO9) are using onboard devices, so if you're using the same board, you won't need to change those assignments. Obviously, if you're using something else, you'll need to change those things in main.
@@ -50,7 +52,7 @@ ssid/wifi password/mqqt server settings must be suplied at compile-time either:
    `SSID="WIFI_SSID" PASSW="WIFI_PASSWORD" MQTT_PORT="1883" MQTT_USER="USER" MQTT_PASS="PASSWORD" MQTT_ADDR="192.168.1.X" cargo build`
    ```
 
-Obviously it's easier to supply them in config.toml, but then you have to make sure that files either in your .gitignore or you do a
+Obviously it's easier to supply them in config.toml, but then you have to make sure that file is either in your .gitignore or you do a
 
 ```bash
 git update-index --skip-worktree .cargo/config.toml
