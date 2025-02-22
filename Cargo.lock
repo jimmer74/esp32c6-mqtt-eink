@@ -673,6 +673,38 @@ dependencies = [
 ]
 
 [[package]]
+name = "esp32c6-mqtt-eink"
+version = "0.1.0"
+dependencies = [
+ "critical-section",
+ "display-interface-spi",
+ "embassy-executor",
+ "embassy-futures",
+ "embassy-net",
+ "embassy-sync",
+ "embassy-time",
+ "embedded-graphics",
+ "embedded-hal-bus",
+ "esp-alloc",
+ "esp-backtrace",
+ "esp-hal",
+ "esp-hal-embassy",
+ "esp-hal-smartled",
+ "esp-println",
+ "esp-wifi",
+ "heapless",
+ "hex",
+ "lazy_static",
+ "profont",
+ "rust-mqtt",
+ "serde",
+ "serde-json-core",
+ "smart-leds",
+ "static_cell",
+ "weact-studio-epd",
+]
+
+[[package]]
 name = "float-cmp"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1334,38 +1366,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "06794f8f6c5c898b3275aebefa6b8a1cb24cd2c6c79397ab15774837a0bc5755"
 dependencies = [
  "winapi-util",
-]
-
-[[package]]
-name = "test-blinky"
-version = "0.1.0"
-dependencies = [
- "critical-section",
- "display-interface-spi",
- "embassy-executor",
- "embassy-futures",
- "embassy-net",
- "embassy-sync",
- "embassy-time",
- "embedded-graphics",
- "embedded-hal-bus",
- "esp-alloc",
- "esp-backtrace",
- "esp-hal",
- "esp-hal-embassy",
- "esp-hal-smartled",
- "esp-println",
- "esp-wifi",
- "heapless",
- "hex",
- "lazy_static",
- "profont",
- "rust-mqtt",
- "serde",
- "serde-json-core",
- "smart-leds",
- "static_cell",
- "weact-studio-epd",
 ]
 
 [[package]]

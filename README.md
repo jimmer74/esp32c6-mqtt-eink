@@ -10,9 +10,9 @@
 
 Have done some esp-idf-hal projects (using std) previously (and other nostd embassy projects with the nrf52), so wanted to do something to check out esp-hal/embassy with one of these c6 chips. Eventually with an eye to doing something with zigbee when rust support matures. In the meantime, thought WiFi/Mqtt would be a fun leg-stretching exercise, so here this is.
 
-It's not ground-breaking, does absolutely nothing useful, but does demonstrate what the chip's capable of and what can be done with embassy nowadays with relatively little effort. I alkso got to check out one of these £5 weact eink displays from aliexpress, then first time I've ever done anything with e-ink.
+It's not ground-breaking, does absolutely nothing useful, but does demonstrate what the chip's capable of and what can be done with embassy nowadays with relatively little effort. I also got to check out one of these £5 weact eink displays from aliexpress, then first time I've ever done anything with e-ink.
 
-I don't normally make stuff I've written public, but thought this might help someone else just getting their feet wet with embedded rust/embassy async. 
+I don't normally make stuff I've written public, but thought this might help someone else just getting their feet wet with embedded rust/embassy async.
 
 Don't at me for my Rust coding style - like Moana I'm self-taught. 🤣
 
@@ -20,7 +20,13 @@ I also like to split things up into their own modules. This includes the embassy
 
 I also wanted to actually finish a project (including documentation and a case) and will upload the stl files once I have something that is working/the correct size/3d printable.
 
-## Connections
+## Tricolor Eink Warning!
+
+Please note refresh rate on Tricolour einks is horrendously slow - three different coloured balls must be jiggled in the z-axis to present the correct colour at the pixel in question. Refresh times of up to 10-15 secs are not unheard of. There is no fast refresh on Tricolours like there is on the black and white ones. Something to consider when choosing these displays! Accroding to something I read on adafruit once (don't have a link - sorry) you should refresh these things a maximum of 1 time every 3 minutes to avoid damaging the display. Not sure how true that is, but something to also bear in mind
+
+## Project Notes
+
+### Connections
 
 The neopixel (GPIO8) and the button (GPIO9) are using onboard devices, so if you're using the same board, you won't need to change those assignments. Obviously, if you're using something else, you'll need to change those things in main.
 
@@ -35,12 +41,6 @@ The Weact 2.9" I have on the following pins:
 
 As far as I'm aware you can only use SPI2 on this chip, and the pin assignment for the module is whatever you want, but this is what I did and have tested it works. Equally, other pin assignments may be fine...
 
-## Tricolor Eink Warning!
-
-Please note refresh rate on Tricolour einks is horrendously slow - three different coloured balls must be jiggled in the z-axis to present the correct colour at the pixel in question. Refresh times of up to 10-15 secs are not unheard of. There is no fast refresh on Tricolours like there is on the black and white ones. Something to consider when choosing these displays! Accroding to something I read on adafruit once (don't have a link - sorry) you should refresh these things a maximum of 1 time every 3 minutes to avoid damaging the display. Not sure how true that is, but something to also bear in mind
-
-## Project Notes
-
 ### Compiling and running
 
 ssid/wifi password/mqqt server settings must be suplied at compile-time either:
@@ -49,7 +49,7 @@ ssid/wifi password/mqqt server settings must be suplied at compile-time either:
 2. Supplied as Env variables on command line:
 
    ```bash
-   `SSID="WIFI_SSID" PASSW="WIFI_PASSWORD" MQTT_PORT="1883" MQTT_USER="USER" MQTT_PASS="PASSWORD" MQTT_ADDR="192.168.1.X" cargo build`
+   SSID="WIFI_SSID" PASSW="WIFI_PASSWORD" MQTT_PORT="1883" MQTT_USER="USER" MQTT_PASS="PASSWORD" MQTT_ADDR="192.168.1.X" cargo build
    ```
 
 Obviously it's easier to supply them in config.toml, but then you have to make sure that file is either in your .gitignore or you do a
@@ -58,7 +58,7 @@ Obviously it's easier to supply them in config.toml, but then you have to make s
 git update-index --skip-worktree .cargo/config.toml
 ```
 
-before you upload anything to a public repo. (Don't want peeps getting thewir hands on your passwords!)
+*after* you've added your passwords but *before* you upload anything to a public repo. (Don't want peeps getting their hands on your passwords!)
 
 To build, flash and monitor in one step you can run:
 
@@ -136,7 +136,7 @@ You can publish:
 mosquitto_pub -L "mqtt://USER:PASSWORD@MQTT_BROKER_IP/test/light" -m '{"r": 50, "g": 0, "b": 0}' -q 1 --nodelay
 ```
 
-And:
+And red:
 
 ![1740062204534](image/README/1740062204534.jpg)
 
@@ -156,7 +156,7 @@ mosquitto_pub -L "mqtt://USER:PASSWORD@MQTT_BROKER_IP/test/light" -m '{"r": 0, "
 
 ![1740062227035](image/README/1740062227035.jpg)
 
-or any combo:
+or any combo (from 0 to 255 for each colour):
 
 ```bash
 mosquitto_pub -L "mqtt://USER:PASSWORD@MQTT_BROKER_IP/test/light" -m '{"r": 30, "g": 5, "b": 70}'

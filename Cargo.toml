@@ -1,6 +1,6 @@
 [package]
 edition = "2021"
-name    = "test-blinky"
+name    = "esp32c6-mqtt-eink"
 version = "0.1.0"
 
 [[bin]]

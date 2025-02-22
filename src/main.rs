@@ -88,13 +88,15 @@ fn write_ip_addr(addr: Option<Ipv4Cidr>) {
             critical_section::with(|cs| {
             let mut st = String::<21>::new();
             _ = st.push_str(&format!("{}/{}", addr.address(), addr.prefix_len()));
-            *IP_ADDR.borrow_ref_mut(cs) = Some(st);
+            //*IP_ADDR.borrow_ref_mut(cs) = Some(st);
+            IP_ADDR.replace(cs, Some(st));
             //sender.try_send(true).unwrap();
             });
         }
         None => {
             critical_section::with(|cs| {
-                *IP_ADDR.borrow_ref_mut(cs) = None;
+                //*IP_ADDR.borrow_ref_mut(cs) = None;
+                IP_ADDR.replace(cs, None);
               //  sender.try_send(false).unwrap();
             });
         }       
@@ -105,7 +107,8 @@ fn read_ip_addr() -> Option<String::<21>> {
     let mut addr: Option<String::<21>> = None;
     
     critical_section::with(|cs| {
-        addr = IP_ADDR.borrow_ref(cs).clone()
+        //addr = IP_ADDR.borrow_ref(cs).clone()
+        addr = IP_ADDR.take(cs);
 
     });
 
@@ -274,133 +277,3 @@ async fn main(spawner: Spawner) {
     }
     
 }
-
-
-
-
-
-
-  /*   
-  // Encode an MQTT Connect packet.
-  let mut buf = [0u8;1024];
-  let pkt = Packet::Connect(Connect { protocol: Protocol::MQTT311,
-                                    keep_alive: 30,
-                                    client_id: "esp32c6".into(),
-                                    clean_session: true,
-                                    last_will: None,
-                                    username: Some(env!("MQTT_USER")),
-                                    password: Some(env!("MQTT_PASS").as_bytes()) });
-       encode_slice(&pkt, &mut buf).unwrap();
-
-       assert_eq!(&buf[14..21], "esp32c6".as_bytes());
-       match tcp_sock.sock.write(&mut buf).await {
-           Ok(x) => {println!("len sent: {}, buf len: {}", x, buf.len())},
-           Err(e) => {println!("Error sending pkt: {:?}", e)}
-        };
-
-    let msg = Packet::Publish(Publish { 
-            dup: false, 
-            qospid: QosPid::AtMostOnce, 
-            retain: false, 
-            topic_name: "test/topic", 
-            payload: "ello from esp".as_bytes() 
-        });
-
-        encode_slice(&msg, &mut buf).unwrap();
-
-        match tcp_sock.sock.write(&mut buf).await {
-            Ok(x) => {println!("len sent: {}, buf len: {}", x, buf.len())},
-            Err(e) => {println!("Error sending pkt: {:?}", e)}
-         }; 
-    //tcp_sock.sock.send_queue();
-    if !mqtt_failed {
-        println!("Generating mqqt config:");
-        let mut mqtt_config = ClientConfig::new(
-            rust_mqtt::client::client_config::MqttVersion::MQTTv5, 
-            CountingRng(20000),
-        );
-    
-        mqtt_config.add_max_subscribe_qos(rust_mqtt::packet::v5::publish_packet::QualityOfService::QoS1);
-        mqtt_config.add_client_id(env!("MQTT_ID"));
-        mqtt_config.add_username(env!("MQTT_USER"));
-        mqtt_config.add_password(env!("MQTT_PASS"));
-        mqtt_config.max_packet_size = 100;
-    
-        println!("id: {:?}. user: {:?}, pass: {:?}", mqtt_config.client_id, mqtt_config.username, mqtt_config.password);
-        
-        println!("Starting mqtt client");
-        let mut mqtt_client= MqttClient::<stack,5,_>::new(
-                        tcp_sock.sock, 
-                        &mut mqtt_bufs.mqtt_send, 80, 
-                        &mut mqtt_bufs.mqtt_recv, 80, 
-                        mqtt_config
-        );
-
-
-      //  let mut mqtt_client = MqttConn::new(tcp_sock, mqtt_bufs);
-
-        
-        match mqtt_client.connect_to_broker().await {
-            Ok(()) => {
-                println!("Connected to MQTT broker at {:?}, {}", env!("MQTT_ADDR"), env!("MQTT_PORT"));
-                
-                // client.conn.subscribe_to_topic("test/topic").await.unwrap();
-                //  state = MqqtState::Idle;
-                
-            },
-            Err(mqtt_err) => match mqtt_err {
-                ReasonCode::NetworkError => {
-                    println!("MQTT Network Error");
-                
-                },
-                _ => {
-                    println!("Other MQTT Error: {:?}", mqtt_err);
-                    
-                }          
-            },
-        };
-            
-        
-       // spawner.spawn(mqtt::mqtt_connection(mqtt_client)).ok();
-    } else {
-        println!("Not starting mqtt client");
-    }
- */
-
-
-     
-            /* let mut buf = [0u8;1024];
-            let pkt = Packet::Connect(Connect { protocol: Protocol::MQTT311,
-                                            keep_alive: 5,
-                                            client_id: env!("MQTT_ID").into(),
-                                            clean_session: true,
-                                            last_will: None,
-                                            username: Some(env!("MQTT_USER")),
-                                            password: Some(env!("MQTT_PASS").as_bytes()) });
-               encode_slice(&pkt, &mut buf).unwrap();
-
-                       _ = tcp_sock.flush().await;
-
-               let mut pos = 0;
-             //  use embassy_io::asynch::Write;
-   
-               tcp_sock.wait_write_ready().await;
-    loop {
-    
-           //assert_eq!(&buf[14..21], "esp32c6".as_bytes());
-           match tcp_sock.write(&mut buf).await {
-                Ok(0) => {
-                    println!("packet EOF");
-                    break;
-                },
-               Ok(x) => {
-                   pos += x;
-                   println!("len sent: {}, buf len: {}, buf pos: {}", x, buf.len(), pos);
-                },
-               Err(e) => {println!("Error sending pkt: {:?}", e)}
-            };
-
-    } */
-
-    
-
